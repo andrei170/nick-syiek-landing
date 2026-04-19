@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TraderNick &middot; The Data Behind Every Trade</title>
+<meta name="description" content="The exact system Nick Syiek uses to run A1 Trading. COT data, sentiment, rate expectations. 242.6% audited return over 6 years.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#050709;--bg-2:#0a0e14;--surface:#11161f;--line:rgba(255,255,255,.07);
+--text:#f1f4f8;--muted:#8892a4;--accent:#15c26b;--accent-2:#4de29a;--glow:#0ea5e9;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.6;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;top:-20%;left:50%;transform:translateX(-50%);width:80%;height:70%;background:radial-gradient(circle,rgba(21,194,107,.07) 0%,transparent 60%);pointer-events:none;z-index:0}
+.container{max-width:1180px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+nav{padding:26px 0;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(5,7,9,.92);backdrop-filter:blur(14px);z-index:100}
+.nav-inner{display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:800;font-size:22px;letter-spacing:-.03em;font-family:'Inter',monospace}
+.logo span{background:linear-gradient(135deg,var(--accent) 0%,var(--accent-2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-cta{padding:10px 22px;background:linear-gradient(135deg,var(--accent) 0%,var(--accent-2) 100%);color:#050709;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px}
+section{padding:100px 0;position:relative}
+.eyebrow{display:inline-block;padding:6px 14px;background:rgba(21,194,107,.08);border:1px solid rgba(21,194,107,.3);border-radius:20px;font-size:12px;font-weight:600;color:var(--accent-2);letter-spacing:.18em;text-transform:uppercase;margin-bottom:24px;font-family:monospace}
+h1{font-size:clamp(42px,6vw,76px);font-weight:800;line-height:1.04;letter-spacing:-.03em;margin-bottom:24px}
+h1 em{font-style:normal;background:linear-gradient(135deg,var(--accent) 0%,var(--accent-2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h2{font-size:clamp(32px,4vw,48px);font-weight:700;line-height:1.15;letter-spacing:-.02em;margin-bottom:20px}
+h3{font-size:22px;font-weight:600;margin-bottom:14px}
+p{color:var(--muted);font-size:17px;max-width:680px}
+.hero{padding-top:80px;text-align:center}
+.hero p{font-size:20px;margin:0 auto 40px;max-width:720px}
+.cta-primary{display:inline-block;padding:18px 38px;background:linear-gradient(135deg,var(--accent) 0%,var(--accent-2) 100%);color:#050709;text-decoration:none;border-radius:12px;font-weight:700;font-size:16px;box-shadow:0 12px 40px rgba(21,194,107,.25);transition:.2s}
+.cta-primary:hover{transform:translateY(-2px)}
+.vsl-box{max-width:900px;margin:60px auto;aspect-ratio:16/9;background:linear-gradient(135deg,var(--surface) 0%,var(--bg-2) 100%);border:1px solid var(--line);border-radius:16px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.vsl-box::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(21,194,107,.08) 0%,transparent 60%)}
+.vsl-box::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(21,194,107,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(21,194,107,.04) 1px,transparent 1px);background-size:30px 30px}
+.play-btn{width:88px;height:88px;border-radius:50%;background:rgba(21,194,107,.15);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;z-index:1}
+.play-btn svg{width:32px;height:32px;fill:var(--accent-2);margin-left:4px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:30px;margin:80px 0 0;padding:40px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.stat-num{font-size:40px;font-weight:800;background:linear-gradient(135deg,var(--accent) 0%,var(--accent-2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-.03em;font-family:monospace}
+.stat-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-top:6px}
+.problem-grid,.pillar-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:50px}
+.card{padding:36px;background:linear-gradient(180deg,var(--surface) 0%,var(--bg-2) 100%);border:1px solid var(--line);border-radius:16px;transition:.3s;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(21,194,107,.4),transparent)}
+.card:hover{border-color:rgba(21,194,107,.35);transform:translateY(-4px)}
+.card-num{font-size:13px;color:var(--accent-2);font-weight:700;letter-spacing:.15em;text-transform:uppercase;margin-bottom:16px;font-family:monospace}
+.card h3{color:var(--text)}
+.card p{font-size:15px}
+.divider{height:1px;background:linear-gradient(90deg,transparent 0%,var(--line) 50%,transparent 100%)}
+.lead-capture{background:linear-gradient(135deg,rgba(21,194,107,.08) 0%,rgba(14,165,233,.04) 100%);border:1px solid rgba(21,194,107,.2);border-radius:24px;padding:70px 60px;text-align:center;margin:80px 0}
+.lead-capture h2{max-width:660px;margin:0 auto 20px}
+.form-row{display:flex;gap:12px;max-width:520px;margin:36px auto 0}
+.form-row input{flex:1;padding:18px 22px;background:var(--bg);border:1px solid var(--line);border-radius:12px;color:var(--text);font-size:15px;font-family:inherit}
+.form-row input:focus{outline:none;border-color:var(--accent)}
+.form-row button{padding:18px 32px;background:linear-gradient(135deg,var(--accent) 0%,var(--accent-2) 100%);color:#050709;border:none;border-radius:12px;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit}
+.offer-box{background:linear-gradient(135deg,#0c1219 0%,#151d29 100%);border:1px solid rgba(21,194,107,.22);border-radius:24px;padding:60px;margin-top:40px}
+.offer-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:60px;align-items:center}
+.offer-price{font-size:48px;font-weight:800;background:linear-gradient(135deg,var(--accent) 0%,var(--accent-2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-.03em;font-family:monospace}
+.offer-price small{font-size:18px;color:var(--muted);font-weight:500;-webkit-text-fill-color:var(--muted)}
+.feature-list{list-style:none;margin-top:24px}
+.feature-list li{padding:12px 0;color:var(--text);display:flex;align-items:flex-start;gap:12px;font-size:15px}
+.feature-list li::before{content:'→';color:var(--accent-2);font-weight:700;flex-shrink:0}
+.bio{display:grid;grid-template-columns:1fr 1.5fr;gap:60px;align-items:center}
+.bio-img{aspect-ratio:4/5;background:linear-gradient(135deg,var(--surface) 0%,var(--bg-2) 100%);border:1px solid var(--line);border-radius:20px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;position:relative;overflow:hidden}
+.bio-img::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(21,194,107,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(21,194,107,.03) 1px,transparent 1px);background-size:20px 20px}
+.faq-item{border-bottom:1px solid var(--line);padding:24px 0;cursor:pointer}
+.faq-q{display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:18px;color:var(--text)}
+.faq-plus{width:24px;height:24px;position:relative;flex-shrink:0}
+.faq-plus::before,.faq-plus::after{content:'';position:absolute;background:var(--accent-2);top:50%;left:50%;transition:.3s}
+.faq-plus::before{width:14px;height:2px;transform:translate(-50%,-50%)}
+.faq-plus::after{width:2px;height:14px;transform:translate(-50%,-50%)}
+.faq-item.open .faq-plus::after{transform:translate(-50%,-50%) rotate(90deg);opacity:0}
+.faq-a{max-height:0;overflow:hidden;transition:.3s}
+.faq-item.open .faq-a{max-height:320px;padding-top:14px}
+.footer{padding:60px 0;border-top:1px solid var(--line);text-align:center}
+.footer p{margin:0 auto;font-size:14px}
+.ticker-bar{display:flex;gap:40px;padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;font-family:monospace;font-size:13px;color:var(--muted);margin-bottom:60px}
+.ticker-bar span{display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.ticker-bar .up{color:var(--accent-2)}
+.ticker-bar .dn{color:#ef4444}
+@media(max-width:768px){
+.problem-grid,.pillar-grid,.stats{grid-template-columns:1fr}
+.offer-grid,.bio{grid-template-columns:1fr}
+.lead-capture,.offer-box{padding:40px 24px}
+.form-row{flex-direction:column}
+section{padding:70px 0}
+.stats{gap:20px}
+.ticker-bar{flex-wrap:wrap;gap:20px;font-size:11px}
+}
+.reveal{opacity:0;transform:translateY(30px);transition:.8s}
+.reveal.in{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+<nav>
+<div class="container nav-inner">
+<div class="logo">TRADER<span>NICK</span></div>
+<a href="#apply" class="nav-cta">Join VIP →</a>
+</div>
+</nav>
+
+<section class="hero">
+<div class="container">
+<div class="ticker-bar reveal">
+<span>EUR/USD <span class="up">+0.42%</span></span>
+<span>GBP/USD <span class="dn">-0.18%</span></span>
+<span>XAU/USD <span class="up">+1.24%</span></span>
+<span>USD/JPY <span class="up">+0.31%</span></span>
+<span>US30 <span class="dn">-0.52%</span></span>
+<span>BTC/USD <span class="up">+2.11%</span></span>
+</div>
+<div class="eyebrow reveal">A1 TRADING · EST. 2019</div>
+<h1 class="reveal">Most Traders Guess. <em>I Read The Data First.</em></h1>
+<p class="reveal">COT positioning. Retail sentiment. Rate expectations. Three signals, one screen, every trade. 242.6% audited return over six years, roughly 2.10% a month averaged. No hype.</p>
+<div class="vsl-box reveal">
+<div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+</div>
+<a href="#apply" class="cta-primary reveal">See Inside VIP →</a>
+<div class="stats reveal">
+<div><div class="stat-num">242.6%</div><div class="stat-label">Return · 6 Years</div></div>
+<div><div class="stat-num">500K+</div><div class="stat-label">YouTube Subs</div></div>
+<div><div class="stat-num">5</div><div class="stat-label">Traders On Desk</div></div>
+<div><div class="stat-num">2.10%</div><div class="stat-label">Avg Monthly</div></div>
+</div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<section>
+<div class="container">
+<div class="eyebrow reveal">THE PROBLEM</div>
+<h2 class="reveal">Why Most Retail Traders<br>Blow Up In Year One</h2>
+<p class="reveal" style="font-size:18px">It's almost never the chart. It's the missing layers behind it.</p>
+<div class="problem-grid">
+<div class="card reveal"><div class="card-num">ISSUE 01</div><h3>Trading On Chart Alone</h3><p>Most retail traders open a chart, draw a few lines, and guess. The chart doesn't tell you where the big money is sitting. Chart-only trading is the fastest way to the wrong side of a move.</p></div>
+<div class="card reveal"><div class="card-num">ISSUE 02</div><h3>No Macro Layer</h3><p>Rate expectations, COT positioning, sentiment. The three data layers that drive 80% of directional bias are absent from most retail workflows. Price alone is a lagging signal.</p></div>
+<div class="card reveal"><div class="card-num">ISSUE 03</div><h3>Risk Management Is An Afterthought</h3><p>Position sizing gets picked by gut feel, not math. One bad week wipes out six months of discipline because stops were set wrong from the start.</p></div>
+</div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<section>
+<div class="container">
+<div class="eyebrow reveal">THE FRAMEWORK</div>
+<h2 class="reveal">The 3-Layer Edge,<br>Built Into Every Trade</h2>
+<div class="pillar-grid">
+<div class="card reveal"><div class="card-num">LAYER 1</div><h3>COT + Positioning</h3><p>Where are commercials, large specs, and retail sitting right now? When extremes line up, the trade almost picks itself. EdgeFinder surfaces this in 90 seconds.</p></div>
+<div class="card reveal"><div class="card-num">LAYER 2</div><h3>Macro + Rates</h3><p>Which central bank is turning hawkish, which is turning dovish, and how much is already priced in? The macro wind decides which side of the pair you want to be on.</p></div>
+<div class="card reveal"><div class="card-num">LAYER 3</div><h3>Execution + Risk</h3><p>Chart entry comes last. Stop placement, position size, and target all calculated from the stop distance. Risk is fixed per trade, results compound monthly.</p></div>
+</div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<section>
+<div class="container">
+<div class="lead-capture reveal">
+<div class="eyebrow">FREE PLAYBOOK</div>
+<h2>The COT Playbook &middot; 3 Setups I Run Every Week</h2>
+<p style="margin:0 auto">The full breakdown of how I use COT data, retail sentiment, and rate expectations to pick directional trades. Three setups with live examples from the past year. Free. Straight to inbox.</p>
+<form class="form-row" onsubmit="event.preventDefault();alert('Check your inbox. Playbook sent.')">
+<input type="email" placeholder="Enter your email" required>
+<button type="submit">Send It →</button>
+</form>
+</div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<section id="apply">
+<div class="container">
+<div class="eyebrow reveal">THE DESK</div>
+<h2 class="reveal">A1 Trading VIP</h2>
+<div class="offer-box reveal">
+<div class="offer-grid">
+<div>
+<div class="offer-price">Starts Monthly<small>&nbsp;· Gold lifetime also available</small></div>
+<p style="margin-top:16px">VIP is the room where the team actually trades. 0-3 signals daily, full chatroom access, live coaching webinars, strategy library. Pricing stays flexible. Monthly is the safest first step. Gold is for traders who know this is permanent. Details discussed on the VIP page.</p>
+<ul class="feature-list">
+<li>Daily signals from Nick, Marko, Eivind, and Alan</li>
+<li>24/7 VIP trading chatroom</li>
+<li>Live coaching webinars + market reviews</li>
+<li>Strategy library (handwritten setups, not recycled)</li>
+<li>EdgeFinder + StockBox included</li>
+<li>Pulver Alerts available on Gold tier</li>
+<li>Trade Tracker dashboard (Gold only)</li>
+</ul>
+</div>
+<div>
+<div style="background:rgba(21,194,107,.06);border:1px solid rgba(21,194,107,.2);border-radius:16px;padding:32px;text-align:center">
+<div class="eyebrow">TRACK RECORD</div>
+<h3 style="margin-bottom:12px">242.6% Over 6 Years</h3>
+<p style="margin:0 auto 24px">Audited and public. Roughly 2.10% averaged monthly. Not the flashy number. The sustainable one.</p>
+<a href="#apply" class="cta-primary" style="width:100%">See VIP Pricing →</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<section>
+<div class="container">
+<div class="bio">
+<div class="bio-img reveal">[Nick at the desk]</div>
+<div class="reveal">
+<div class="eyebrow">ABOUT NICK</div>
+<h2>Six Years On The Desk.<br>Five Traders Behind Me.</h2>
+<p style="font-size:17px;margin-top:20px">I started trading at 18, launched the TraderNick channel in 2018, and founded A1 Trading in 2019. Computer science background, which is why everything I build is data-first. The EdgeFinder software exists because I needed a tool that stopped me from trading on gut feel.</p>
+<p style="margin-top:16px">Today A1 runs with five full-time traders on the desk. Marko on multi-asset, Eivind on gold and oil, Alan on G10 currencies (former JPMorgan Chase), Chris on stock options. Every signal gets a second set of eyes before it hits the chatroom.</p>
+</div>
+</div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<section>
+<div class="container" style="max-width:820px">
+<div class="eyebrow reveal">FAQ</div>
+<h2 class="reveal">Common Questions</h2>
+<div style="margin-top:40px">
+<div class="faq-item reveal" onclick="this.classList.toggle('open')">
+<div class="faq-q"><span>Is this a copy-trade service?</span><div class="faq-plus"></div></div>
+<div class="faq-a"><p>No. Every signal includes the full reasoning, the entry, the stop, and the target. The goal is for you to learn the process and build your own edge. Blind copy-trading is actively discouraged.</p></div>
+</div>
+<div class="faq-item reveal" onclick="this.classList.toggle('open')">
+<div class="faq-q"><span>What markets are covered?</span><div class="faq-plus"></div></div>
+<div class="faq-a"><p>Forex, indices, gold, oil, and stocks. The desk covers majors + crosses on forex, US and European indices, and Chris Pulver leads stock options on the Gold tier.</p></div>
+</div>
+<div class="faq-item reveal" onclick="this.classList.toggle('open')">
+<div class="faq-q"><span>How many signals per day?</span><div class="faq-plus"></div></div>
+<div class="faq-a"><p>0-3 daily on average, market dependent. Slow weeks get fewer. The desk doesn't force signals to fill a quota.</p></div>
+</div>
+<div class="faq-item reveal" onclick="this.classList.toggle('open')">
+<div class="faq-q"><span>Is the track record verifiable?</span><div class="faq-plus"></div></div>
+<div class="faq-a"><p>Yes. MyFxBook-verified track records are published on the site. 242.6% return from March 2020 to March 2026. Roughly 2.10% averaged monthly. Past performance is not a guarantee of future results.</p></div>
+</div>
+<div class="faq-item reveal" onclick="this.classList.toggle('open')">
+<div class="faq-q"><span>Who is this NOT for?</span><div class="faq-plus"></div></div>
+<div class="faq-a"><p>People chasing 30% monthly returns. Anyone unwilling to size trades with fixed risk. If you want lottery tickets, this isn't it. The room is built for slow, compounded growth.</p></div>
+</div>
+</div>
+</div>
+</section>
+
+<section style="text-align:center">
+<div class="container">
+<h2 class="reveal">The Desk Is Open</h2>
+<p class="reveal" style="margin:20px auto 40px">Signals, tools, strategy library, five full-time traders. Start on monthly. Upgrade when it clicks.</p>
+<a href="#apply" class="cta-primary reveal">See VIP Pricing →</a>
+</div>
+</section>
+
+<footer class="footer">
+<div class="container">
+<p>&copy; 2026 A1 Trading · TraderNick. All rights reserved.</p>
+</div>
+</footer>
+
+<script>
+const obs=new IntersectionObserver(e=>e.forEach(x=>x.isIntersecting&&x.target.classList.add('in')),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(e=>obs.observe(e));
+</script>
+</body>
+</html>
